@@ -24,30 +24,33 @@ Ping.configure = function(conf) {
   config = conf;
   if(!config) {
     try {
-      config = require('./config-default-'+process.platform);
+      config = require('./config-default-' + process.platform);
     } catch(e) {
       throw new Error('node-ping-wrapper: Autoconfig for platform '+process.platform+' is not supported\nPlease check issues at https://github.com/langpavel/node-ping-wrapper/issues');
     }
   }
   Ping.event_handlers = [];
 
-  var name, names = Object.keys(config.events);
+  var names = Object.keys(config.events);
   var i,l = names.length;
-  var re;
-  var match_name, match_names = [];
   for(i=0; i<l; i++) {
-    name = names[i];
-    re = config.events[name].regexp;
-    for(match_name in re) {
-      if(typeof re[match_name] === 'number')
-        match_names[re[match_name]] = match_name;
-    }
-    Ping.event_handlers.push({
-      name: name,
-      regexp: new RegExp(re.string,'im'),
-      match_names: match_names,
-      emits: config.events[name].emits
-    });
+    (function() {
+      var name = names[i];
+      var re = config.events[name].regexp;
+      var match_name, match_names = [];
+
+      for(match_name in re) {
+        if(typeof re[match_name] === 'number')
+          match_names[re[match_name]] = match_name;
+      }
+
+      Ping.event_handlers.push({
+        name: name,
+        regexp: new RegExp(re.string,'im'),
+        match_names: match_names,
+        emits: config.events[name].emits
+      });
+    })();
   }
 
 };

@@ -1,11 +1,7 @@
-# node-ping-wrapper
 
-Ping wrapper for node - one process listening on stdout is spawned; inherits from EventEmitter
+// usage: node ./example.js [IP] [timeout in seconds]
 
-## Usage:
-
-```js
-var Ping = require('ping-wrapper');
+var Ping = require('./ping');
 
 
 // load configuration from file 'config-default-' + process.platform
@@ -13,7 +9,7 @@ var Ping = require('ping-wrapper');
 Ping.configure();
 
 
-var ping = new Ping('127.0.0.1');
+var ping = new Ping(process.argv[2] || '127.0.0.1');
 
 ping.on('ping', function(data){
 	console.log('Ping %s: time: %d ms', data.host, data.time);
@@ -24,5 +20,8 @@ ping.on('fail', function(data){
 });
 
 
-// later you can call ping.stop()
-```
+if (process.argv[3]) {
+	setTimeout(function() {
+		ping.stop();
+	}, process.argv[3] * 1000);
+}
